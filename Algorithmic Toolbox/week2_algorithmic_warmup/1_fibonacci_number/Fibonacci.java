@@ -11,7 +11,8 @@ public class Fibonacci {
   public static void main(String args[]) {
     Scanner in = new Scanner(System.in);
     int n = in.nextInt();
-
+    long start = System.currentTimeMillis();
     System.out.println(calc_fib(n));
+    System.out.println(System.currentTimeMillis() - start);
   }
 }
