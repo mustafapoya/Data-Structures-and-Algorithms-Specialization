@@ -1,21 +1,26 @@
-from sys import stdin
-from collections import namedtuple
+n = int(input())
+seg = []
+for i in range(n):
+    ipt = input()
+    seg.append(list(map(int, ipt.split())))
+seg.sort()
+# seg:[[start1, end1], [start2, end2], ... ]
 
-Segment = namedtuple('Segment', 'start end')
+def min_points(seg):
+    n = len(seg)
+    current = 0
+    ends = []
+    while current < n:
+        last = current
+        while current < n - 1 and seg[current + 1][0] <= seg[last][1]:
+            current = current + 1
+            if seg[current][1] < seg[last][1]:
+                last = current
+        ends.append(seg[last][1])
+        current = current + 1
+    return ends
 
-def optimal_points(segments):
-    points = []
-    # write your code here
-    for s in segments:
-        points.append(s.start)
-        points.append(s.end)
-    return points
-
-
-if __name__ == '__main__':
-    input = stdin.read()
-    n, *data = map(int, input.split())
-    segments = list(map(lambda x: Segment(x[0], x[1]), zip(data[::2], data[1::2])))
-    points = optimal_points(segments)
-    print(len(points))
-    print(*points)
+ends = min_points(seg)
+print(len(ends))
+for end in ends:
+    print(end, end = ' ')

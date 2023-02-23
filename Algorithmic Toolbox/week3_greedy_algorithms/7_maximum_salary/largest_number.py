@@ -1,18 +1,16 @@
-from itertools import permutations
+n = int(input())
+digits = list(input().split())
 
+def max_num(lst):
+    n = len(lst)
+    for i in range(n - 1):
+        for i in range(n - 1 - i):
+            if lst[i] + lst[i+1] < lst[i + 1] + lst[i]:
+                lst[i], lst[i + 1] = lst[i + 1], lst[i]
+    return lst
 
-def largest_number_naive(numbers):
-    numbers = list(map(str, numbers))
-
-    largest = 0
-
-    for permutation in permutations(numbers):
-        largest = max(largest, int("".join(permutation)))
-
-    return largest
-
-
-if __name__ == '__main__':
-    _ = int(input())
-    input_numbers = input().split()
-    print(largest_number_naive(input_numbers))
+digits = max_num(digits)
+result = ''
+for digit in digits:
+    result = result + digit
+print(result)
