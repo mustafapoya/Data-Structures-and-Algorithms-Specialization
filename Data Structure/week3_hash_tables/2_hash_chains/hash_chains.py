@@ -1,13 +1,15 @@
 # python3
 
-class Query:
+from collections import deque
 
+
+class Query:
     def __init__(self, query):
         self.type = query[0]
-        if self.type == 'check':
-            self.ind = int(query[1])
+        if self.type == "check":
+            self.index = int(query[1])
         else:
-            self.s = query[1]
+            self.word = query[1]
 
 
 class QueryProcessor:
@@ -16,49 +18,39 @@ class QueryProcessor:
 
     def __init__(self, bucket_count):
         self.bucket_count = bucket_count
-        # store all strings in one list
-        self.elems = []
+        self.hash_table = list(deque() for _ in range(self.bucket_count))
 
-    def _hash_func(self, s):
-        ans = 0
-        for c in reversed(s):
-            ans = (ans * self._multiplier + ord(c)) % self._prime
-        return ans % self.bucket_count
+    def HashFunction(self, word):
+        hash_value = 0
+        for char in reversed(word):
+            hash_value = (hash_value * self._multiplier + ord(char)) % self._prime
+        return hash_value % self.bucket_count
 
-    def write_search_result(self, was_found):
-        print('yes' if was_found else 'no')
-
-    def write_chain(self, chain):
-        print(' '.join(chain))
-
-    def read_query(self):
-        return Query(input().split())
-
-    def process_query(self, query):
-        if query.type == "check":
-            # use reverse order, because we append strings to the end
-            self.write_chain(cur for cur in reversed(self.elems)
-                        if self._hash_func(cur) == query.ind)
-        else:
-            try:
-                ind = self.elems.index(query.s)
-            except ValueError:
-                ind = -1
-            if query.type == 'find':
-                self.write_search_result(ind != -1)
-            elif query.type == 'add':
-                if ind == -1:
-                    self.elems.append(query.s)
+    def ProcessQuery(self, query):
+        if query.type == 'check':
+            if self.hash_table[query.index]:
+                print(' '.join(self.hash_table[query.index]))
             else:
-                if ind != -1:
-                    self.elems.pop(ind)
+                print()
+        else:
+            hash_value = self.HashFunction(query.word)
+            if query.type == "add":
+                if query.word not in self.hash_table[hash_value]:
+                    self.hash_table[hash_value].appendleft(query.word)
+            elif query.type == "del":
+                if query.word in self.hash_table[hash_value]:
+                    self.hash_table[hash_value].remove(query.word)
+            elif query.type == "find":
+                if query.word in self.hash_table[hash_value]:
+                    print('yes')
+                else:
+                    print('no')
 
-    def process_queries(self):
-        n = int(input())
-        for i in range(n):
-            self.process_query(self.read_query())
 
 if __name__ == '__main__':
-    bucket_count = int(input())
-    proc = QueryProcessor(bucket_count)
-    proc.process_queries()
+    n_buckets = int(input())
+    hash_table = QueryProcessor(n_buckets)
+    n_queries = int(input())
+    for _ in range(n_queries):
+        command = Query(input().split())
+        hash_table.ProcessQuery(command)
