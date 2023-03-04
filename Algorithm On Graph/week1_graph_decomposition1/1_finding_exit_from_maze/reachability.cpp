@@ -13,6 +13,7 @@ int reach(vector<vector<int> > &adj, int x, int y) {
 int main() {
   size_t n, m;
   std::cin >> n >> m;
+  vector<vector<int> > adj(n, vector<int>());
   for (size_t i = 0; i < m; i++) {
     int x, y;
     std::cin >> x >> y;
